@@ -10,6 +10,7 @@ using Terraria;
 using Terraria.Localization;
 using TerrariaApi.Server;
 using TShockAPI;
+using TShockAPI.DB;
 
 namespace InfiniteChestsV3
 {
@@ -261,7 +262,10 @@ namespace InfiniteChestsV3
 								break;
 							case ChestAction.None:
 								//check for perms
-								if (gchest.userid != -1 && !gchest.isPublic && !gchest.groups.Contains(gplayer.Group.Name) && !gplayer.HasPermission("ic.edit") && gplayer.IsLoggedIn && gchest.userid != gplayer.User.ID && !gchest.users.Contains(gplayer.User.ID))
+								if (!gplayer.HasPermission("ic.edit")
+									&& ((TShock.Config.RegionProtectChests && !TShock.Regions.CanBuild(gchest.x, gchest.y, gplayer))
+									|| (gchest.userid != -1 && !gchest.isPublic && !gchest.groups.Contains(gplayer.Group.Name)
+									&& (!gplayer.IsLoggedIn || (gchest.userid != gplayer.User.ID && !gchest.users.Contains(gplayer.User.ID))))))
 								{
 									gplayer.SendErrorMessage("This chest is protected.");
 									break;
